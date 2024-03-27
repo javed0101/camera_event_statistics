@@ -1,0 +1,19 @@
+{
+    "app": {
+        "port": ":8082",
+        "logLevel": ""
+    },
+    "redis": {
+        "hostName": "172.20.0.2:6379",
+        "password": "",
+        "db": 0,
+        "maxRetries": 2
+    },
+    "pulsar": {
+        "hostname": "pulsar://172.20.0.3:6650",
+        "subscriptionName": "cameraevent",
+        "topic": {
+            "cameraEvent": "persistent://public/default/cameraevent"
+        }
+    }
+}

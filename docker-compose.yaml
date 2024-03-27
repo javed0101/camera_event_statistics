@@ -1,0 +1,81 @@
+version: '3.7'
+
+services:
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    networks:
+      camera-event-network:
+        ipv4_address: 172.20.0.2
+
+  pulsar:
+    image: apachepulsar/pulsar
+    container_name: pulsar
+    ports:
+      - 6650:6650
+      - "8080:8080"
+    volumes:
+      - pulsar_data:/pulsar/data
+      - pulsar_conf:/pulsar/conf
+      - ../mount/pulsar/mod_standalone.conf:/pulsar/conf/mod_standalone.conf
+    environment:
+      PULSAR_MEM: " -Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"
+      PULSAR_STANDALONE_CONF: /pulsar/conf/mod_standalone.conf
+    command: bin/pulsar standalone -nfw -nss
+    networks:
+      camera-event-network:
+        ipv4_address: 172.20.0.3
+    environment:
+      PULSAR_MEM: "-Xms1g -Xmx1g"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    networks:
+      camera-event-network:
+        ipv4_address: 172.20.0.4
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      camera-event-network:
+        ipv4_address: 172.20.0.5
+
+  cameraevent:
+    container_name: cameraevent
+    image: cameraevent
+    depends_on:
+      - pulsar
+      - redis
+    build: .
+    ports:
+      - "8082:8082"
+    networks:
+      camera-event-network:
+        ipv4_address: 172.20.0.6
+
+volumes:
+  pulsar_data:
+  pulsar_conf:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  camera-event-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16

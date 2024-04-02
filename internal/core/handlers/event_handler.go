@@ -14,14 +14,19 @@ import (
 func CameraEventHandler(c *fiber.Ctx) error {
 	cameraEventRequest := new(cameraevents.CameraEventRequest)
 	cameraEventRequest.ExtractCameraEvent(c)
-	if _, validate := cameraEventRequest.ValidateCameraEvent(c); validate != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": eenerror.ErrorInvalidParam,
-		})
-	}
+	// if _, validate := cameraEventRequest.ValidateCameraEvent(c); validate != nil {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	// 		"error": eenerror.ErrorInvalidParam,
+	// 	})
+	// }
 	rc := redis.GetRedisClient()
-	key := helper.StringPointer(*cameraEventRequest.CameraID + *cameraEventRequest.EventType)
-	redisData, err := rc.GetEventFromRedis(context.Background(), key)
+	var redisKey *string
+	eventTypeFlag := cameraEventRequest.EventType != nil
+	redisKey = helper.StringPointer(*cameraEventRequest.CameraID)
+	if eventTypeFlag {
+		redisKey = helper.StringPointer(*cameraEventRequest.CameraID + ":" + *cameraEventRequest.EventType)
+	}
+	redisData, err := rc.GetEventFromRedis(context.Background(), redisKey, eventTypeFlag)
 	// if redisData == nil {
 	// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 	// 		"error": eenerror.ErrorRedisDown,

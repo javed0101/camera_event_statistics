@@ -35,8 +35,8 @@ type Topic struct {
 
 var config *AppConfig
 
-func InitConfig() {
-	configFile, err := os.ReadFile("config/config.json")
+func InitConfig(appEnv string) {
+	configFile, err := os.ReadFile("config/config-" + appEnv + ".json")
 	if err != nil {
 		log.Fatalf("Error reading config file. Error: %s", err.Error())
 	}

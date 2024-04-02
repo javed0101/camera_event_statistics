@@ -26,4 +26,4 @@ scrape_configs:
     # scheme defaults to 'http'.
 
     static_configs:
-      - targets: ["localhost:9090", "pulsar:8080", "172.20.0.6:8082"]
+      - targets: ["localhost:9090", "localhost:6650", "localhost:8082"]

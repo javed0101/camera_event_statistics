@@ -18,8 +18,8 @@ def hit_curl_at_rate(camera_id, event_type, rate_per_second, total_requests):
         hit_curl(camera_id, event_type)
         time.sleep(interval)
 
-camera_id = "cam-869015"
-event_type = "motion-detection"
+camera_id = "10094541s"
+event_type = "motion"
 rate_per_second = 100 
 total_requests = 1000
 

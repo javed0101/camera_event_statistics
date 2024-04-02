@@ -1,20 +1,27 @@
 package models
 
+type EventInfo struct {
+	LastCztsTs        *string `json:"last_czts_ts,omitempty"`
+	CurrentTimestamp  *int64  `json:"currentTimestamp,omitempty"`
+	CurrentThumbCount *int    `json:"currentThumbCount,omitempty"`
+	SubEventType      *string `json:"subEventType,omitempty"`
+}
+
+type Event struct {
+	Event     *string    `json:"event,omitempty"`
+	EventType *string    `json:"eventType,omitempty"`
+	EventInfo *EventInfo `json:"eventInfo,omitempty"`
+	CameraID  *string    `json:"cameraid,omitempty"`
+	AccountID *string    `json:"accountid,omitempty"`
+	Timestamp *string    `json:"timestamp,omitempty"`
+	TaskID    *string    `json:"taskid,omitempty"`
+	EventID   *string    `json:"eventid,omitempty"`
+}
+
+type Info struct {
+	Event *Event `json:"event,omitempty"`
+}
+
 type PulsarEvent struct {
-	EventID   *string   `json:"eventID"`
-	CamersID  *string   `json:"cameraID"`
-	TimeStamp *string   `json:"timestamp"`
-	Location  *Location `json:"location"`
-	EventType *string   `json:"eventType"`
-	MetaData  *MetaData `json:"metaData"`
-}
-
-type Location struct {
-	Latitude  *float64 `json:"latitude"`
-	Longitude *float64 `json:"longitude"`
-}
-
-type MetaData struct {
-	ObjectID        *string  `json:"objectID"`
-	ConfidenceScore *float64 `json:"confidenceScore"`
+	Info *Info `json:"info,omitempty"`
 }

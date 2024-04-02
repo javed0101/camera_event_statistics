@@ -7,15 +7,12 @@ load_dotenv()
 
 hostname = os.getenv("HOSTNAME")
 topic = os.getenv("TOPIC")
-logFile = os.getenv("LOG_FILE_PATH")
 eventRate = int(os.getenv("EVENT_RATE"))
 eventType = json.loads(os.getenv("EVENT_TYPE"))
 cameraIDs = json.loads(os.getenv("CAMERA_IDS"))
 
 directory = os.path.dirname(logFile)
 os.makedirs(directory, exist_ok=True)
-
-logging.basicConfig(filename=logFile, level=logging.INFO, force=True)
 
 def push_dummy_camera_events(producer):
     for index in range(eventRate):
@@ -36,7 +33,7 @@ def push_dummy_camera_events(producer):
         }
         producer.send(json.dumps(camera_event).encode())
         print(camera_event)
-        logging.info(f"Pused event to Pulsar with event ID: {camera_event['eventID']} and event type: {camera_event['eventType']} at {time.time()}")
+        logging.info(f"Pushed event to Pulsar with event ID: {camera_event['eventID']} and event type: {camera_event['eventType']} at {time.time()}")
 
 def get_current_time():
     current_time = datetime.now()

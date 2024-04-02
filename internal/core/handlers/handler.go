@@ -13,7 +13,7 @@ func RootHandler(c *fiber.Ctx) error {
 
 func HealthHandler(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status": "healthy",
+		"status": "app is in healthy state",
 	})
 }
 

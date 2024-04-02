@@ -2,6 +2,7 @@ package http
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +14,10 @@ import (
 
 func InitAPIServer() {
 
-	configmanager.InitConfig()
+	appEnv := os.Getenv("APP_ENV")
+	log.Printf("App is running in %s environment", appEnv)
+
+	configmanager.InitConfig(appEnv)
 	config := configmanager.GetConfig()
 
 	redis.InitRedis()

@@ -23,7 +23,7 @@ func getCameraEventProcessor(topic string) IJobProcessor {
 }
 
 func (cam *CameraEvent) ProcessJob() {
-	log.Info("Initializing workers for consuming events from topic: ", cam.Topic)
+	log.Info("Initializing workers for consuming events from topic: ", *cam.Topic)
 	config := configmanager.GetConfig()
 	client, err := pulsar.NewClient(pulsar.ClientOptions{
 		URL:               *config.Pulsar.HostName,
@@ -57,11 +57,13 @@ func (cam *CameraEvent) ProcessJob() {
 		var pulsarEvent *models.PulsarEvent
 		err = json.Unmarshal(message.Payload(), &pulsarEvent)
 		if err != nil {
-			log.Fatalf("Error unmarshalling pulsar event. Error: ", err.Error())
+			log.Info("Error unmarshalling pulsar event. Error: ", err.Error())
+			continue
 		}
+		fmt.Println("CameraID:", *pulsarEvent.Info.Event.CameraID, "******************", "Event Type:", *pulsarEvent.Info.Event.EventType)
 		redisEvent := new(models.RedisEvent)
 		redisEvent.Count = helper.IntPointer(0)
-		redisEvent.EndTime = pulsarEvent.TimeStamp
+		redisEvent.EndTime = pulsarEvent.Info.Event.Timestamp
 		ctx := context.Background()
 		PushEvents(ctx, redisEvent, pulsarEvent)
 		if err != nil {
@@ -74,6 +76,7 @@ func (cam *CameraEvent) ProcessJob() {
 
 func PushEvents(ctx context.Context, redisEvent *models.RedisEvent, pulsarEvent *models.PulsarEvent) {
 	redisClient := redis.GetRedisClient()
-	key := helper.StringPointer(*pulsarEvent.CamersID + *pulsarEvent.EventType)
-	_ = redisClient.AddEventToRedis(ctx, key, redisEvent, pulsarEvent)
+	redisKey := helper.StringPointer(*pulsarEvent.Info.Event.CameraID + ":" + *pulsarEvent.Info.Event.EventType)
+	log.Info("Redis Key: ", *redisKey)
+	_ = redisClient.AddEventToRedis(ctx, redisKey, redisEvent, pulsarEvent)
 }

@@ -36,12 +36,13 @@ RUN apk add --no-cache shadow
 RUN apk add --no-cache vim
 
 ENV HOME /usr/src/app
+ENV APP_ENV prod
 WORKDIR $HOME
 
 RUN mkdir -p "$HOME/config"
 
 COPY --from=build $HOME/build/cameraevent $HOME
 COPY --from=build $HOME/run.sh $HOME/run.sh
-COPY --from=build $HOME/config/config.json $HOME/config
+COPY --from=build $HOME/config/config-prod.json $HOME/config
 
 CMD ["sh", "run.sh"]

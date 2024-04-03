@@ -13,7 +13,8 @@ type AppConfig struct {
 }
 
 type App struct {
-	Port string `json:"port"`
+	Port    string `json:"port"`
+	Workers int    `json:"workers"`
 }
 
 type Redis struct {

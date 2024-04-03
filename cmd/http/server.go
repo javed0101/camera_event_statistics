@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -25,7 +26,14 @@ func InitAPIServer() {
 	// Init pulsar client and workers
 	// Sleeping for 5s because pulsar is taking some time to come up, depends_on is not working in docker-compose
 	time.Sleep(time.Second * 5)
-	go processor.JobProcessor(*config.Pulsar.Topic.CameraEvent).ProcessJob()
+
+	workers := config.App.Workers
+	jobChan := make(chan processor.CameraEvent, workers)
+
+	for i := 1; i <= workers; i++ {
+		go processor.JobProcessor(*config.Pulsar.Topic.CameraEvent, jobChan).ProcessJob()
+		fmt.Println("Job Processed: ", <-jobChan)
+	}
 
 	app := fiber.New()
 

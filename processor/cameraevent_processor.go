@@ -15,14 +15,16 @@ import (
 )
 
 type CameraEvent struct {
-	Topic *string
+	Topic   *string
+	Channel chan CameraEvent
 }
 
-func getCameraEventProcessor(topic string) IJobProcessor {
-	return &CameraEvent{Topic: &topic}
+func getCameraEventProcessor(topic string, jobChan chan CameraEvent) IJobProcessor {
+	return &CameraEvent{Topic: &topic, Channel: jobChan}
 }
 
 func (cam *CameraEvent) ProcessJob() {
+	cam.Channel <- *cam
 	log.Info("Initializing workers for consuming events from topic: ", *cam.Topic)
 	config := configmanager.GetConfig()
 	client, err := pulsar.NewClient(pulsar.ClientOptions{

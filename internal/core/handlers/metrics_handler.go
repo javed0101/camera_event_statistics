@@ -59,8 +59,9 @@ func LatencyMetrics(c *fiber.Ctx) error {
 var (
 	totalRequests = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "http_requests_total",
-			Help: "Total number of HTTP requests.",
+			Namespace: "camera_event",
+			Name:      "http_requests_total",
+			Help:      "Total number of HTTP requests.",
 		},
 		[]string{"status_code", "path", "method"},
 	)
@@ -69,8 +70,9 @@ var (
 var (
 	camEventCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "camera_event_counter",
-			Help: "Metic to track camera events",
+			Namespace: "camera_event",
+			Name:      "counter",
+			Help:      "Metic to track camera events",
 		},
 		[]string{"cam_event"},
 	)
@@ -88,7 +90,7 @@ var (
 
 var latency = prometheus.NewSummaryVec(
 	prometheus.SummaryOpts{
-		Namespace:  "api",
+		Namespace:  "camera_event",
 		Name:       "latency_seconds",
 		Help:       "Latency distributions.",
 		Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},

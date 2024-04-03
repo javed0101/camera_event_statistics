@@ -11,11 +11,13 @@ COPY --from=harbor.eencloud.com/vms/goeen:1.0.109 /usr/src/app/go/src/github.com
 RUN cd /usr/src/goeen && \
     go mod download
 
+EXPOSE 8082
+
 COPY ./go.mod $HOME/
 COPY ./go.sum $HOME/
 RUN cd $HOME/ && go mod download
 
-CMD [ "sleep", "infinity"]
+CMD ["sleep", "infinity"]
 
 FROM deps AS build
 
@@ -27,7 +29,7 @@ COPY . $HOME
 ENV GOFLAGS=-tags=no_dhash,no_mpack
 RUN cd $HOME && make build
 
-CMD [ "sleep", "infinity"]
+CMD ["sleep", "infinity"]
 
 FROM alpine:3.18.2 AS prod
 
